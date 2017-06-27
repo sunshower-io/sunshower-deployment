@@ -24,6 +24,7 @@ services:
   web-services:
     image: "sunshower/web-services:${WEB_VERSION}"
     environment: 
+      - SUNSHOWERDB_PASSWORD=${SUNSHOWERDB_PASSWORD}
       - KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
       - SUNSHOWER_ADMINISTRATOR_EMAIL=${SUNSHOWER_ADMINISTRATOR_EMAIL}
       - SUNSHOWER_ADMINISTRATOR_PASSWORD=${SUNSHOWER_ADMINISTRATOR_PASSWORD}
@@ -34,6 +35,8 @@ services:
 
   db:
     image: "postgres:9.6"
+    environment:
+      - POSTGRES_PASSWORD=${SUNSHOWERDB_PASSWORD}
 
 
   build-env:

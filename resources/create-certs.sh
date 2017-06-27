@@ -1,7 +1,9 @@
 #!/bin/bash
+## This doesn't need to be a variable--it's hardcoded several places in the
+## Docker configurations
 
-PREFIX="keystore"
 
+PREFIX="server"
 
 echo "Creating certificates with prefix $PREFIX";
 
@@ -33,6 +35,10 @@ keytool -importkeystore \
     -srckeystore ${PREFIX}.p12 \
     -srcstoretype PKCS12
 
-mkdir ~/.sunshower/certs
-cp *${PREFIX}* ~/.sunshower/certs
+dir=~/.sunshower/certs
+if [[ ! -e $dir ]]; then
+    mkdir -p $dir
+fi;
+
+mv *${PREFIX}* ~/.sunshower/certs
 
