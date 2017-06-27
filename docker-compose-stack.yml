@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+
+  proxy:
+    image: "nginx:1.11.1"
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - proxy
+    volumes:
+      - ./resources/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./resources/nginx/certs/sunshower.io.crt:/etc/nginx/sunshower.io.crt:ro
+      - ./resources/nginx/certs/sunshower.io.key:/etc/nginx/sunshower.io.key:ro
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  ui:
+    image: "sunshower/ui:latest"
+    networks:
+      - proxy
+      - default
+    deploy:
+      replicas: 2
+
+  web-services:
+    image: "sunshower/web-services:latest"
+    links:
+      - db
+    networks:
+      - proxy
+      - default
+    deploy:
+      replicas: 2
+
+  db:
+    image: "postgres:9.6"
+    networks:
+      - default
+
+networks:
+  default:
+    external: false
+  proxy:
+    external: true

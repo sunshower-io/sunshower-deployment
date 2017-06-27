@@ -1,0 +1,60 @@
+version: '2.1'
+
+services:
+
+  proxy:
+    image: nginx:1.11.1
+    volumes:
+      - ./resources/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./resources/nginx/certs/server.crt:/etc/nginx/server.crt:ro
+      - ./resources/nginx/certs/server.key:/etc/nginx/server.key:ro
+
+
+  ui:
+    build: .
+    image: "sunshower/ui:${UI_VERSION}"
+    environment: 
+      - KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+    volumes:
+      - ./resources/nginx/certs:/keys
+
+  web-services:
+    image: "sunshower/web-services:${WEB_VERSION}"
+    environment: 
+      - KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+    volumes:
+      - ./resources/nginx/certs:/keys
+
+
+  db:
+    image: "postgres:9.6"
+
+
+  build-env:
+    build:
+      context: .
+      dockerfile: Dockerfile.build
+    image: sunshower/ui-build-env
+
+
+
+  build-war:
+    extends:
+      service: build-env
+    volumes:
+      - ./:/usr/src/
+      - ~/.jspm:/root/.jspm
+      - ~/.gradle/wrapper:/root/.gradle/wrapper
+      - ~/.gradle/gradle.properties:/root/.gradle/gradle.properties
+    working_dir: /usr/src/web-ui
+    command: bash -c "npm install && jspm install -y && npm rebuild node-sass && cd .. && chmod +x gradlew && ./gradlew clean build"
+
+
+  gulp-test:
+    extends:
+      service: build-env
+    volumes:
+      - ./:/usr/src/
+      - ~/.jspm:/root/.jspm
+    working_dir: /usr/src/web-ui
+    command: bash -c "npm install && jspm install -y && npm rebuild node-sass && gulp build"

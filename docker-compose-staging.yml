@@ -1,0 +1,32 @@
+version: '2.1'
+
+services:
+
+  proxy:
+    extends:
+      file: common-services.yml
+      service: proxy
+    links:
+      - ui
+      - web-services
+    ports:
+      - 80
+      - 443
+
+
+  ui:
+    image: "sunshower/ui:${UI_VERSION}"
+
+
+  web-services:
+    extends:
+      file: common-services.yml
+      service: web-services
+    links:
+      - db
+
+
+  db:
+    extends:
+      file: common-services.yml
+      service: db

@@ -1,0 +1,47 @@
+version: '2.1'
+
+services:
+  marketing:
+    image: "sunshower/marketing:${MARKETING_VERSION}"
+    volumes:
+      - ./resources/nginx/certs/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ./resources/nginx/certs/server.key:/etc/nginx/ssl/server.key:ro
+
+  proxy:
+    extends:
+      file: common-services.yml
+      service: proxy
+    links:
+      - marketing
+      - ui
+      - web-services
+    ports:
+      - 80:80
+      - 443:443
+
+
+  ui:
+    image: "sunshower/ui:${UI_VERSION}"
+    environment: 
+      - KEYSTORE_PASSWORD=mzlapQ123
+    volumes: 
+      - ./resources/nginx/certs:/keys
+
+
+  web-services:
+    extends:
+      file: common-services.yml
+      service: web-services
+    links:
+      - marketing
+      - db
+    environment: 
+      - KEYSTORE_PASSWORD=mzlapQ123
+    volumes: 
+      - ./resources/nginx/certs:/keys
+
+
+  db:
+    extends:
+      file: common-services.yml
+      service: db
