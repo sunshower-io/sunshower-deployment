@@ -4,8 +4,8 @@ services:
   marketing:
     image: "sunshower/marketing:${MARKETING_VERSION}"
     volumes:
-      - ./resources/nginx/certs/server.crt:/etc/nginx/ssl/server.crt:ro
-      - ./resources/nginx/certs/server.key:/etc/nginx/ssl/server.key:ro
+      - ~/.sunshower/certs/server.crt:/etc/nginx/ssl/server.crt:ro
+      - ~/.sunshower/certs/server.key:/etc/nginx/ssl/server.key:ro
 
   proxy:
     extends:
@@ -21,11 +21,10 @@ services:
 
 
   ui:
-    image: "sunshower/ui:${UI_VERSION}"
-    environment: 
-      - KEYSTORE_PASSWORD=mzlapQ123
-    volumes: 
-      - ./resources/nginx/certs:/keys
+    extends:
+      file: common-services.yml
+      service: ui
+
 
 
   web-services:
@@ -35,10 +34,6 @@ services:
     links:
       - marketing
       - db
-    environment: 
-      - KEYSTORE_PASSWORD=mzlapQ123
-    volumes: 
-      - ./resources/nginx/certs:/keys
 
 
   db:

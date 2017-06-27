@@ -5,9 +5,9 @@ services:
   proxy:
     image: nginx:1.11.1
     volumes:
-      - ./resources/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./resources/nginx/certs/server.crt:/etc/nginx/server.crt:ro
-      - ./resources/nginx/certs/server.key:/etc/nginx/server.key:ro
+      - ./resources/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ~/.sunshower/certs/server.crt:/etc/nginx/server.crt:ro
+      - ~/.sunshower/certs/server.key:/etc/nginx/server.key:ro
 
 
   ui:
@@ -15,15 +15,21 @@ services:
     image: "sunshower/ui:${UI_VERSION}"
     environment: 
       - KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+      - SUNSHOWER_ADMINISTRATOR_EMAIL=${SUNSHOWER_ADMINISTRATOR_EMAIL}
+      - SUNSHOWER_ADMINISTRATOR_PASSWORD=${SUNSHOWER_ADMINISTRATOR_PASSWORD}
+      - SUNSHOWER_ADMINISTRATOR_USERNAME=${SUNSHOWER_ADMINISTRATOR_USERNAME}
     volumes:
-      - ./resources/nginx/certs:/keys
+      - ~/.sunshower/certs:/keys
 
   web-services:
     image: "sunshower/web-services:${WEB_VERSION}"
     environment: 
       - KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+      - SUNSHOWER_ADMINISTRATOR_EMAIL=${SUNSHOWER_ADMINISTRATOR_EMAIL}
+      - SUNSHOWER_ADMINISTRATOR_PASSWORD=${SUNSHOWER_ADMINISTRATOR_PASSWORD}
+      - SUNSHOWER_ADMINISTRATOR_USERNAME=${SUNSHOWER_ADMINISTRATOR_USERNAME}
     volumes:
-      - ./resources/nginx/certs:/keys
+      - ~/.sunshower/certs:/keys
 
 
   db:
